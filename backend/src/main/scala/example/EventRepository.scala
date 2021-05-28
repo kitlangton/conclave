@@ -7,7 +7,8 @@ import zio._
 import zio.blocking.Blocking
 import zio.magic._
 
-import java.sql.Connection
+import java.sql.{Connection, Timestamp, Types}
+import java.time.Instant
 
 trait EventRepository {
   def allEvents: Task[List[Event]]
@@ -30,6 +31,10 @@ object QuillContext extends PostgresZioJdbcContext(SnakeCase) {
 import QuillContext._
 
 case class EventRepositoryLive(connection: Connection, blocking: Blocking.Service) extends EventRepository {
+  implicit val instantEncoder: Encoder[Instant] =
+    encoder(Types.TIMESTAMP, (index, value, row) => row.setTimestamp(index, Timestamp.from(value)))
+  implicit val instantDecoder: Decoder[Instant] = decoder((index, row) => { row.getTimestamp(index).toInstant })
+
   lazy val env: Has[Connection] with Has[Blocking.Service] =
     Has(connection) ++ Has(blocking)
 

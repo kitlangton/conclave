@@ -26,6 +26,10 @@ import java.util.UUID
   * - RSVP
   *   - account_id
   *   - event_id
+  *
+  * QUESTIONS:
+  *  - How to use a connection pool with Quill?
+  *  - How to batch and pipeline queries with ZQuery.
   */
 object Backend extends App {
   private val httpApp: HttpApp[Has[EventService], Throwable] =
@@ -35,17 +39,15 @@ object Backend extends App {
     }
 
   val eventFixtures = List(
-    Event(UUID.randomUUID(), "Zymposium Berlin", "Zymposium in Berlin", Instant.now().toEpochMilli),
+    Event(UUID.randomUUID(), "Zymposium Berlin", "Zymposium in Berlin", Instant.now()),
     Event(
       UUID.randomUUID(),
       "Zymposium New Zealand",
       "Zymposium in New Zealand",
-      Instant.now().plusSeconds(999999).toEpochMilli
+      Instant.now().plusSeconds(999999)
     ),
-    Event(UUID.randomUUID(), "Zymposium Mars", "Zymposium on Mars", Instant.now().plusSeconds(999999999).toEpochMilli)
+    Event(UUID.randomUUID(), "Zymposium Mars", "Zymposium on Mars", Instant.now().plusSeconds(999999999))
   )
-
-//  val insertEventFixtures =
 
   val program = for {
     port <- system.envOrElse("PORT", "8088").map(_.toInt).orElseSucceed(8088)
@@ -64,7 +66,7 @@ case class EventServiceLive(eventRepository: EventRepository, random: zio.random
     eventRepository.allEvents
 
   override def createEvent(newEvent: NewEvent): Task[Event] =
-    eventRepository.save(Event(UUID.randomUUID(), newEvent.title, newEvent.description, Instant.now().toEpochMilli))
+    eventRepository.save(Event(UUID.randomUUID(), newEvent.title, newEvent.description, Instant.now()))
 }
 
 object EventServiceLive {

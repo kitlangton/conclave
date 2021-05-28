@@ -15,7 +15,7 @@ case class Event(
     id: UUID,
     title: String,
     description: String,
-    time: Long
+    time: Instant
     // Zoom
     // Creator account_id
 )
