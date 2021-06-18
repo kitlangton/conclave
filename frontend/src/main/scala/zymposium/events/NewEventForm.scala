@@ -1,8 +1,9 @@
-package zymposium
+package zymposium.events
 
 import com.raquo.laminar.api.L._
+import components.Component
 import formula.{DeriveForm, Form}
-import zymposium.protocol.NewEvent
+import zymposium.model.NewEvent
 
 case class NewEventForm(observer: Observer[NewEvent]) extends Component {
   val newEventVar = Var(NewEvent("", ""))

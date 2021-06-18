@@ -4,6 +4,7 @@ version := "0.1"
 
 val animusVersion    = "0.1.9"
 val laminarVersion   = "0.13.0"
+val laminextVersion  = "0.13.6"
 val postgresVersion  = "42.2.8"
 val sttpVersion      = "3.3.6"
 val zioAppVersion    = "0.2.5+9-2e55fbbd+20210618-1100-SNAPSHOT"
@@ -65,10 +66,11 @@ lazy val frontend = project
     scalaJSLinkerConfig ~= { _.withSourceMap(false) },
     scalaJSUseMainModuleInitializer := true,
     libraryDependencies ++= Seq(
-      "io.github.kitlangton" %%% "animus"          % animusVersion,
-      "com.raquo"            %%% "laminar"         % laminarVersion,
-      "io.github.cquiroz"    %%% "scala-java-time" % "2.2.1",
-      "io.laminext"          %%% "websocket"       % "0.12.2"
+      "io.github.kitlangton" %%% "animus"               % animusVersion,
+      "com.raquo"            %%% "laminar"              % laminarVersion,
+      "io.github.cquiroz"    %%% "scala-java-time"      % "2.3.0",
+      "io.github.cquiroz"    %%% "scala-java-time-tzdb" % "2.3.0",
+      "io.laminext"          %%% "websocket"            % laminextVersion
     )
   )
   .settings(sharedSettings)

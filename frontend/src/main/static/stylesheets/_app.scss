@@ -3,7 +3,9 @@
   background: #222;
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
-  margin-bottom: 2px;
+  margin: 12px 0;
+  padding: 8px;
+  border-radius: 4px;
 
   div {
     padding: 4px 8px;

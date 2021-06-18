@@ -1,9 +1,10 @@
-package zymposium
+package zymposium.repositories
 
 import zio.blocking.Blocking
 import zio.stream.{UStream, ZStream}
 import zio.{query => _, _}
-import zymposium.protocol.Account
+import zymposium.QuillContext._
+import zymposium.model.Account
 
 import java.sql.{Connection, Timestamp, Types}
 import java.time.Instant
@@ -24,8 +25,6 @@ object AccountRepository {
   def save(account: Account): ZIO[Has[AccountRepository], Throwable, Account] =
     ZIO.serviceWith[AccountRepository](_.save(account))
 }
-
-import QuillContext._
 
 case class AccountRepositoryLive(accountHub: Hub[Account], connection: Connection, blocking: Blocking.Service)
     extends AccountRepository {

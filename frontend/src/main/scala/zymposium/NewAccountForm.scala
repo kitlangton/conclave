@@ -1,8 +1,9 @@
 package zymposium
 
 import com.raquo.laminar.api.L._
+import components.Component
 import formula.{DeriveForm, Form}
-import zymposium.protocol.NewAccount
+import zymposium.model.NewAccount
 
 case class NewAccountForm(observer: Observer[NewAccount]) extends Component {
   val newAccountVar = Var(NewAccount(""))

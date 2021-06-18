@@ -1,8 +1,9 @@
 package zymposium
 
 import com.raquo.laminar.api.L._
+import components.Component
 import zymposium.Clients.eventService
-import zymposium.protocol.{Account, Event, Rsvp}
+import zymposium.model.{Account, Event, Rsvp}
 
 case class RsvpForm(accountsVar: Var[List[Account]], eventsVar: Var[List[Event]]) extends Component {
   val selectedAccount = Var(Option.empty[Account])

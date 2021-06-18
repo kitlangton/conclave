@@ -1,10 +1,12 @@
-package zymposium
+package zymposium.protocols
 
 import zio._
 import zymposium.Authentication.{Claims, jwtEncode}
-import zymposium.protocol.{JwtToken, LoginService}
+import zymposium.model.JwtToken
+import zymposium.protocol.LoginProtocol
+import zymposium.repositories.AccountRepository
 
-case class LoginServiceLive(accountRepository: AccountRepository) extends LoginService {
+case class LoginProtocolLive(accountRepository: AccountRepository) extends LoginProtocol {
   override def login(email: String, password: String): IO[String, JwtToken] =
     if (password == "123") {
       for {
@@ -15,7 +17,7 @@ case class LoginServiceLive(accountRepository: AccountRepository) extends LoginS
       ZIO.fail("INVALID PASSWORD OR USERNAME")
 }
 
-object LoginServiceLive {
-  val layer: URLayer[Has[AccountRepository], Has[LoginService]] =
-    (LoginServiceLive.apply _).toLayer[LoginService]
+object LoginProtocolLive {
+  val layer: URLayer[Has[AccountRepository], Has[LoginProtocol]] =
+    (LoginProtocolLive.apply _).toLayer[LoginProtocol]
 }

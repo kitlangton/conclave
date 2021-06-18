@@ -1,15 +1,18 @@
-package zymposium
+package zymposium.events
 
-import animus._
 import com.raquo.laminar.api.L._
+import components.Component
 import zio.app.DeriveClient
+import zio.interop.laminar._
 import zio.stream.ZStream
 import zio.{Chunk, UIO}
-import zymposium.LaminarZioSyntax._
-import zymposium.protocol.{Event, Rsvp, UserEventsService}
+import zymposium.Clients
+import zymposium.model.{Event, Rsvp}
+import zymposium.protocol.UserEventsProtocol
+import animus._
 
 case class EventListing(token: String) extends Component {
-  private val client = DeriveClient.gen[UserEventsService](Some(token))
+  private val client = DeriveClient.gen[UserEventsProtocol](Some(token))
 
   val rsvpVar: Var[List[Rsvp]] = Var(List.empty)
 
@@ -33,15 +36,9 @@ case class EventListing(token: String) extends Component {
         button(
           composeEvents(onClick)(_.sample($isAttending)) --> { isAttending =>
             if (isAttending)
-              client
-                .removeRsvp(event.id)
-                .tap { rsvp => UIO(rsvpVar.update(_.filterNot(_.eventId == event.id))) }
-                .runAsync()
+              (client.removeRsvp(event.id) *> UIO(rsvpVar.update(_.filterNot(_.eventId == event.id)))).runAsync()
             else
-              client
-                .rsvp(event.id)
-                .tap { rsvp => UIO(rsvpVar.update(rsvp :: _)) }
-                .runAsync()
+              client.rsvp(event.id).tap { rsvp => UIO(rsvpVar.update(rsvp :: _)) }.runAsync()
           },
           child.text <-- $isAttending.map { if (_) "Attending" else "Rsvp" }
         )

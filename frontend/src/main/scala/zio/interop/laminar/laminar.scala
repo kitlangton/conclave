@@ -1,4 +1,4 @@
-package zymposium
+package zio.interop
 
 import com.raquo.laminar.api.L._
 import zio._
@@ -8,7 +8,7 @@ import zio.stream.ZStream
 import scala.concurrent.ExecutionContext
 import scala.scalajs.js
 
-object LaminarZioSyntax {
+package object laminar {
 
   def runtimeFromLayerJS[R <: Has[_]](layer: ULayer[R]): Runtime.Managed[R] = {
     val scalaJSExecutor =

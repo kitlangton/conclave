@@ -1,4 +1,4 @@
-package zymposium
+package components
 
 import com.raquo.laminar.api.L._
 

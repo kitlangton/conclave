@@ -5,14 +5,15 @@ import zio._
 import zio.app.DeriveRoutes
 import zio.magic._
 import zymposium.protocol._
-
 import CustomPicklers._
+import zymposium.protocols.{AccountProtocolLive, EventProtocolLive, LoginProtocolLive, UserEventsProtocolLive}
+import zymposium.repositories.{AccountRepository, EventRepository}
 
 object Backend extends App {
-  private lazy val eventService      = DeriveRoutes.gen[EventService]
-  private lazy val accountService    = DeriveRoutes.gen[AccountService]
-  private lazy val userEventsService = DeriveRoutes.gen[UserEventsService]
-  private lazy val loginRoutes       = DeriveRoutes.gen[LoginService]
+  private lazy val eventService      = DeriveRoutes.gen[EventProtocol]
+  private lazy val accountService    = DeriveRoutes.gen[AccountProtocol]
+  private lazy val userEventsService = DeriveRoutes.gen[UserEventsProtocol]
+  private lazy val loginRoutes       = DeriveRoutes.gen[LoginProtocol]
   private lazy val app = loginRoutes +++ eventService +++
     Authentication.authenticate(HttpApp.forbidden("Not allowed!"), accountService +++ userEventsService)
 
@@ -27,10 +28,10 @@ object Backend extends App {
         QuillContext.live,
         AccountRepository.live,
         EventRepository.live,
-        EventServiceLive.layer,
-        LoginServiceLive.layer,
-        AccountServiceLive.layer,
-        UserEventsServiceLive.layer,
+        EventProtocolLive.layer,
+        LoginProtocolLive.layer,
+        AccountProtocolLive.layer,
+        UserEventsProtocolLive.layer,
         AppContext.live
       )
       .exitCode

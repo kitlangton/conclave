@@ -1,4 +1,4 @@
-package zymposium.protocol
+package zymposium.model
 
 import java.time.Instant
 import java.util.UUID
@@ -9,3 +9,5 @@ case class Event(
     description: String,
     time: Instant
 )
+
+case class NewEvent(title: String, description: String)

@@ -1,12 +1,10 @@
-package zymposium
+package zymposium.repositories
 
-import zymposium.protocol.{Event, Rsvp}
-import io.getquill.context.ZioJdbc.QDataSource
-import io.getquill.{PostgresZioJdbcContext, SnakeCase}
-import zio.{query => _, _}
 import zio.blocking.Blocking
-import zio.magic._
 import zio.stream.{UStream, ZStream}
+import zio.{query => _, _}
+import zymposium.QuillContext._
+import zymposium.model.{Event, Rsvp}
 
 import java.sql.{Connection, Timestamp, Types}
 import java.time.Instant
@@ -32,8 +30,6 @@ object EventRepository {
 
   def save(event: Event): ZIO[Has[EventRepository], Throwable, Event] = ZIO.serviceWith[EventRepository](_.save(event))
 }
-
-import QuillContext._
 
 case class EventRepositoryLive(
     newEventHub: Hub[Event],

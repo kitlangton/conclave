@@ -1,12 +1,12 @@
 package zymposium
 
 import zio.app.DeriveClient
-import zymposium.protocol.{AccountService, EventService, LoginService}
+import zymposium.protocol.{AccountProtocol, EventProtocol, LoginProtocol}
 import zymposium.protocol.CustomPicklers._
 
 object Clients {
-  val eventService: EventService = DeriveClient.gen[EventService]
-  val loginService: LoginService = DeriveClient.gen[LoginService]
+  val eventService: EventProtocol = DeriveClient.gen[EventProtocol]
+  val loginService: LoginProtocol = DeriveClient.gen[LoginProtocol]
 
-  val accountService: AccountService = DeriveClient.gen[AccountService]
+  val accountService: AccountProtocol = DeriveClient.gen[AccountProtocol]
 }

@@ -1,4 +1,4 @@
-package zymposium.protocol
+package zymposium.model
 
 import java.util.UUID
 
@@ -9,7 +9,4 @@ case class Account(
     githubRefreshToken: Option[String] = None
 )
 
-case class Rsvp(
-    accountId: UUID,
-    eventId: UUID
-)
+case class NewAccount(email: String)

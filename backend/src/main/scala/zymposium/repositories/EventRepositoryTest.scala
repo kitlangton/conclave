@@ -1,8 +1,8 @@
-package zymposium
+package zymposium.repositories
 
-import zymposium.protocol.{Event, Rsvp}
 import zio._
 import zio.stream.{UStream, ZStream}
+import zymposium.model.{Event, Rsvp}
 
 import java.util.UUID
 

@@ -1,15 +1,14 @@
 package zymposium
 
 import com.raquo.laminar.api.L._
+import components.Component
 import zio._
-import zio.app.DeriveClient
-import zymposium.Clients.eventService
-import LaminarZioSyntax._
-import zymposium.protocol.{Account, AccountInfo, AccountService}
+import zymposium.events.EventListing
+import zymposium.model.AccountInfo
+import zymposium.pages.{AdminPage, UserPage}
 
 object Frontend {
-  val runtime    = Runtime.default
-  val accountVar = Var(Option.empty[(AccountInfo, String)])
+  val runtime = Runtime.default
 
   sealed trait Mode
 
@@ -31,19 +30,8 @@ object Frontend {
         button("ADMIN", onClick --> { _ => modeVar.set(Mode.Admin) })
       ),
       child <-- modeVar.signal.map {
-        case Mode.User  => userView
+        case Mode.User  => UserPage()
         case Mode.Admin => AdminPage()
       }
     )
-
-  private def userView = {
-    div(
-      LoginForm(accountVar),
-      child.maybe <-- accountVar.signal.map {
-        _.map { case (_, token) =>
-          EventListing(token)
-        }
-      }
-    )
-  }
 }

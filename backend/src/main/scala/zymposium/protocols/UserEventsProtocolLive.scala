@@ -1,12 +1,15 @@
-package zymposium
+package zymposium.protocols
 
 import zio._
+import zymposium.AppContext
 import zymposium.Authentication.Claims
-import zymposium.protocol.{Rsvp, UserEventsService}
+import zymposium.model.Rsvp
+import zymposium.protocol.UserEventsProtocol
+import zymposium.repositories.EventRepository
 
 import java.util.UUID
 
-case class UserEventsServiceLive(appContext: AppContext, eventRepo: EventRepository) extends UserEventsService {
+case class UserEventsProtocolLive(appContext: AppContext, eventRepo: EventRepository) extends UserEventsProtocol {
   override def rsvpedEvents: UIO[List[Rsvp]] =
     for {
       ctx   <- getAccountContext
@@ -31,7 +34,7 @@ case class UserEventsServiceLive(appContext: AppContext, eventRepo: EventReposit
   }
 }
 
-object UserEventsServiceLive {
-  val layer: URLayer[Has[AppContext] with Has[EventRepository], Has[UserEventsService]] =
-    (UserEventsServiceLive.apply _).toLayer
+object UserEventsProtocolLive {
+  val layer: URLayer[Has[AppContext] with Has[EventRepository], Has[UserEventsProtocol]] =
+    (UserEventsProtocolLive.apply _).toLayer
 }
