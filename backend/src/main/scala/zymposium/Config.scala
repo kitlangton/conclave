@@ -1,4 +1,4 @@
-package example
+package zymposium
 
 import zio._
 import zio.config._

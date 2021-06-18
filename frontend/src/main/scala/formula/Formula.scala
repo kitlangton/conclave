@@ -3,7 +3,66 @@ package formula
 import com.raquo.laminar.api.L._
 import magnolia._
 
+import java.time.Instant
+import java.util.UUID
 import scala.language.experimental.macros
+
+trait Table[A] {
+  def renderRow(a: A): HtmlElement
+  def renderHeaders: HtmlElement
+}
+
+object Table {
+  def render[A, Key](signal: Signal[Seq[A]])(key: A => Key)(implicit Table: Table[A]): HtmlElement =
+    table(
+      Table.renderHeaders,
+      children <-- signal.split(key) { (_, value, _) =>
+        Table.renderRow(value)
+      }
+    )
+
+  def primitiveTable[A]: Table[A] = new Table[A] {
+    override def renderRow(a: A): HtmlElement = div(a.toString)
+    override def renderHeaders: HtmlElement   = div()
+  }
+
+  implicit def optionTable[A](implicit table: Table[A]): Table[Option[A]] =
+    new Table[Option[A]] {
+      override def renderRow(a: Option[A]): HtmlElement =
+        a match {
+          case Some(value) => table.renderRow(value)
+          case None        => div("—")
+        }
+      override def renderHeaders: HtmlElement = table.renderHeaders
+    }
+
+  implicit val uuidTable: Table[UUID]       = primitiveTable[UUID]
+  implicit val stringTable: Table[String]   = primitiveTable[String]
+  implicit val intTable: Table[Int]         = primitiveTable[Int]
+  implicit val instantTable: Table[Instant] = primitiveTable[Instant]
+}
+
+object DeriveTable {
+  type Typeclass[A] = Table[A]
+
+  def combine[A](caseClass: CaseClass[Table, A]): Table[A] = new Table[A] {
+    override def renderRow(a: A): HtmlElement =
+      tr(
+        caseClass.parameters.map { param =>
+          td(param.typeclass.renderRow(param.dereference(a)))
+        }
+      )
+
+    override def renderHeaders: HtmlElement =
+      thead(
+        caseClass.parameters.map { param =>
+          th(param.label)
+        }
+      )
+  }
+
+  implicit def gen[A]: Table[A] = macro Magnolia.gen[A]
+}
 
 object DeriveForm {
   type Typeclass[A] = Form[A]

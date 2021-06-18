@@ -1,4 +1,4 @@
-package example
+package zymposium
 
 import com.raquo.laminar.api.L._
 import org.scalajs.dom

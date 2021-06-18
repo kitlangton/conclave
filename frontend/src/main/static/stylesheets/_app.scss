@@ -1,0 +1,35 @@
+.event {
+  font-size: 20px;
+  background: #222;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  margin-bottom: 2px;
+
+  div {
+    padding: 4px 8px;
+  }
+
+  .event-title {
+    font-weight: bold;
+    margin-right: 18px;
+  }
+
+  .event-time {
+    align-self: flex-end;
+  }
+}
+
+.account {
+  opacity: 0.7;
+  font-size: 18px;
+
+  margin: 4px 0;
+  &:hover {
+    opacity: 0.9
+  }
+}
+
+.account-logged-in {
+  opacity: 1;
+  font-weight: bold;
+}
