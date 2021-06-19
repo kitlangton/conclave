@@ -2,8 +2,9 @@ package zymposium
 
 import pdi.jwt.{Jwt, JwtAlgorithm, JwtClaim}
 import zhttp.http.{Http, HttpApp, Request}
-import zio.Has
+import zio.{Has, UIO, ZIO}
 import zio.json._
+import zio.stream.ZStream
 
 import java.time.Clock
 import java.util.UUID
@@ -35,14 +36,13 @@ object Authentication {
       fail: HttpApp[R, E],
       success: HttpApp[R, E]
   ): HttpApp[R with Has[AppContext], E] =
+    // Request -> AuthHeader -> Decode -> Set(claims) -> Response
     Http.fromFunction { (r: Request) =>
       r.getHeader("authorization")
         .flatMap {
           _.value match {
             case s"Bearer $token" =>
-              println(s"BEARER ${token}")
               jwtDecode(token).flatMap { jwt =>
-                println(s"TOKEN ${jwt}")
                 jwt.content.fromJson[Claims].toOption
               }
             case _ => None

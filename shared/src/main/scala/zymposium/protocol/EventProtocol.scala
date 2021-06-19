@@ -6,6 +6,7 @@ import zymposium.model._
 
 trait EventProtocol {
   def allEvents: Task[List[Event]]
+
   def allEventsStream: UStream[Event]
   def createEvent(newEvent: NewEvent): Task[Event]
 

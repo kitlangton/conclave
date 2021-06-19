@@ -1,6 +1,7 @@
 package zymposium.repositories
 
 import zio.blocking.Blocking
+import zio.macros.accessible
 import zio.stream.{UStream, ZStream}
 import zio.{query => _, _}
 import zymposium.QuillContext._
@@ -10,14 +11,16 @@ import java.sql.{Connection, Timestamp, Types}
 import java.time.Instant
 import java.util.UUID
 
+@accessible
 trait EventRepository {
   def removeRsvp(rsvp: Rsvp): Task[Unit]
 
-  def rsvpStream: UStream[Rsvp]
+  def allRsvpsStream: UStream[Rsvp]
 
   def allEvents: Task[List[Event]]
   def allEventsStream: UStream[Event]
 
+  def allRsvps: Task[List[Rsvp]]
   def rsvps(accountId: UUID): Task[List[Rsvp]]
   def createRsvp(rsvp: Rsvp): Task[Unit]
 
@@ -25,10 +28,8 @@ trait EventRepository {
 }
 
 object EventRepository {
-  val test: ULayer[Has[EventRepository]]                                              = EventRepositoryTest.layer
-  val live: URLayer[Has[Connection] with Has[Blocking.Service], Has[EventRepository]] = EventRepositoryLive.layer
-
-  def save(event: Event): ZIO[Has[EventRepository], Throwable, Event] = ZIO.serviceWith[EventRepository](_.save(event))
+  val test: ULayer[Has[EventRepository]]                                 = EventRepositoryTest.layer
+  val live: URLayer[Has[Connection] with Blocking, Has[EventRepository]] = EventRepositoryLive.layer
 }
 
 case class EventRepositoryLive(
@@ -66,12 +67,9 @@ case class EventRepositoryLive(
     run(query[Rsvp].insert(lift(rsvp))).provide(env) *>
       rsvpHub.publish(rsvp).unit
 
-  override def rsvpStream: UStream[Rsvp] =
+  override def allRsvpsStream: UStream[Rsvp] =
     ZStream.fromEffect(allRsvps.orDie.map(Chunk.fromIterable)).flattenChunks ++
       ZStream.fromHub(rsvpHub)
-
-  private def allRsvps: Task[List[Rsvp]] =
-    run(query[Rsvp]).provide(env)
 
   override def rsvps(accountId: UUID): Task[List[Rsvp]] =
     run(query[Rsvp].filter(_.accountId == lift(accountId))).provide(env)
@@ -82,6 +80,9 @@ case class EventRepositoryLive(
     }
       .provide(env)
       .unit
+
+  override def allRsvps: Task[List[Rsvp]] =
+    run(query[Rsvp]).provide(env)
 }
 
 object EventRepositoryLive {

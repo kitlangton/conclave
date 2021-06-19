@@ -1,6 +1,7 @@
 package zymposium.repositories
 
 import zio.blocking.Blocking
+import zio.macros.accessible
 import zio.stream.{UStream, ZStream}
 import zio.{query => _, _}
 import zymposium.QuillContext._
@@ -9,6 +10,7 @@ import zymposium.model.Account
 import java.sql.{Connection, Timestamp, Types}
 import java.time.Instant
 
+@accessible
 trait AccountRepository {
   def get(email: String): Task[Option[Account]]
 
@@ -21,9 +23,6 @@ trait AccountRepository {
 
 object AccountRepository {
   val live: URLayer[Has[Connection] with Has[Blocking.Service], Has[AccountRepository]] = AccountRepositoryLive.layer
-
-  def save(account: Account): ZIO[Has[AccountRepository], Throwable, Account] =
-    ZIO.serviceWith[AccountRepository](_.save(account))
 }
 
 case class AccountRepositoryLive(accountHub: Hub[Account], connection: Connection, blocking: Blocking.Service)

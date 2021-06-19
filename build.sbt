@@ -53,6 +53,8 @@ lazy val backend = project
       "com.softwaremill.sttp.client3" %% "httpclient-backend-zio" % sttpVersion,
       "org.postgresql"                 % "postgresql"             % postgresVersion,
       "io.getquill"                   %% "quill-jdbc-zio"         % zioQuillVersion,
+      "com.github.ghostdogpr"         %% "caliban"                % "1.0.1",
+      "com.github.ghostdogpr"         %% "caliban-zio-http"       % "1.0.1",
       "com.github.jwt-scala"          %% "jwt-core"               % "8.0.2"
     )
   )
@@ -66,15 +68,19 @@ lazy val frontend = project
     scalaJSLinkerConfig ~= { _.withSourceMap(false) },
     scalaJSUseMainModuleInitializer := true,
     libraryDependencies ++= Seq(
-      "io.github.kitlangton" %%% "animus"               % animusVersion,
-      "com.raquo"            %%% "laminar"              % laminarVersion,
-      "io.github.cquiroz"    %%% "scala-java-time"      % "2.3.0",
-      "io.github.cquiroz"    %%% "scala-java-time-tzdb" % "2.3.0",
-      "io.laminext"          %%% "websocket"            % laminextVersion
+      "io.github.kitlangton"  %%% "animus"                  % animusVersion,
+      "com.raquo"             %%% "laminar"                 % laminarVersion,
+      "io.github.cquiroz"     %%% "scala-java-time"         % "2.3.0",
+      "io.github.cquiroz"     %%% "scala-java-time-tzdb"    % "2.3.0",
+      "com.github.ghostdogpr" %%% "caliban-client"          % "1.0.1",
+      "com.github.ghostdogpr" %%% "caliban-client-laminext" % "1.0.1",
+      "io.laminext"           %%% "websocket"               % laminextVersion
     )
   )
   .settings(sharedSettings)
   .dependsOn(shared)
+
+enablePlugins(CodegenPlugin)
 
 lazy val shared = project
   .enablePlugins(ScalaJSPlugin)

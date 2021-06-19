@@ -17,8 +17,7 @@ object AppContext {
     } yield new AppContext {
       override def get: UIO[Option[Claims]] = fiberRef.get
 
-      override def set(claims: Claims): UIO[Unit] =
-        fiberRef.set(Some(claims))
+      override def set(claims: Claims): UIO[Unit] = fiberRef.set(Some(claims))
     }
   }.toLayer
 }

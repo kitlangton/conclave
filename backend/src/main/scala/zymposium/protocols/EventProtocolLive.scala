@@ -34,7 +34,7 @@ case class EventProtocolLive(
     eventRepository.createRsvp(rsvp)
 
   override def allRsvpsStream: UStream[Rsvp] =
-    eventRepository.rsvpStream
+    eventRepository.allRsvpsStream
 }
 
 object EventProtocolLive {

@@ -1,6 +1,7 @@
 package zymposium.protocols
 
 import zio._
+import zio.stream.{UStream, ZStream}
 import zymposium.AppContext
 import zymposium.Authentication.Claims
 import zymposium.model.Rsvp
@@ -10,6 +11,17 @@ import zymposium.repositories.EventRepository
 import java.util.UUID
 
 case class UserEventsProtocolLive(appContext: AppContext, eventRepo: EventRepository) extends UserEventsProtocol {
+  def rsvpStream: UStream[Rsvp] =
+    ZStream.unwrap {
+      for {
+        ctx0 <- appContext.get
+        _    <- ZIO.descriptor.map(_.id).debug("DESC IN PROTOCOL")
+        _    <- UIO(println(s"ATTEMPT CTX: ${ctx0}"))
+        ctx  <- getAccountContext
+        stream = eventRepo.allRsvpsStream.filter(_.accountId == ctx.accountId)
+      } yield stream
+    }
+
   override def rsvpedEvents: UIO[List[Rsvp]] =
     for {
       ctx   <- getAccountContext

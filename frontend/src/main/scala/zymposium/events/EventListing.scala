@@ -33,6 +33,9 @@ case class EventListing(token: String) extends Component {
         div(cls("event-title"), event.title),
         div(cls("event-description"), event.description),
         div(cls("event-time"), event.time.toString),
+//        onMountCallback { _ =>
+//          client.rsvpStream.tap { rsvp => UIO(println(s"RSVP $rsvp")) }.runDrain.runAsync()
+//        },
         button(
           composeEvents(onClick)(_.sample($isAttending)) --> { isAttending =>
             if (isAttending)
