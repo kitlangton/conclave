@@ -34,18 +34,16 @@ object EventRepository {
 case class EventRepositoryLive(
     newEventHub: Hub[Event],
     rsvpHub: Hub[Rsvp],
-    connection: Connection,
-    blocking: Blocking.Service
+    connection: Connection
 ) extends EventRepository {
+
+  lazy val env: Has[Connection] = Has(connection)
 
   implicit val instantEncoder: Encoder[Instant] =
     encoder(Types.TIMESTAMP, (index, value, row) => row.setTimestamp(index, Timestamp.from(value)))
 
   implicit val instantDecoder: Decoder[Instant] =
     decoder((index, row) => { row.getTimestamp(index).toInstant })
-
-  lazy val env: Has[Connection] with Has[Blocking.Service] =
-    Has(connection) ++ Has(blocking)
 
   override def allEvents: Task[List[Event]] =
     run(query[Event]).provide(env)
@@ -85,12 +83,11 @@ case class EventRepositoryLive(
 }
 
 object EventRepositoryLive {
-  val layer: URLayer[Has[Connection] with Blocking, Has[EventRepository]] = {
+  val layer: URLayer[Has[Connection], Has[EventRepository]] = {
     for {
-      blocking    <- ZIO.service[Blocking.Service]
       connection  <- ZIO.service[Connection]
       newEventHub <- Hub.bounded[Event](256)
       rsvpHub     <- Hub.bounded[Rsvp](256)
-    } yield EventRepositoryLive(newEventHub, rsvpHub, connection, blocking)
+    } yield EventRepositoryLive(newEventHub, rsvpHub, connection)
   }.toLayer
 }

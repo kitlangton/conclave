@@ -28,8 +28,10 @@ object AccountRepository {
 
 case class AccountRepositoryLive(accountHub: Hub[Account], connection: Connection, blocking: Blocking.Service)
     extends AccountRepository {
+
   implicit val instantEncoder: Encoder[Instant] =
     encoder(Types.TIMESTAMP, (index, value, row) => row.setTimestamp(index, Timestamp.from(value)))
+
   implicit val instantDecoder: Decoder[Instant] = decoder((index, row) => { row.getTimestamp(index).toInstant })
 
   lazy val env: Has[Connection] with Has[Blocking.Service] =

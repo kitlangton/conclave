@@ -9,4 +9,10 @@ case class Account(
     githubRefreshToken: Option[String] = None
 )
 
+case class Comment(
+    id: UUID,
+    text: String,
+    accountId: UUID
+)
+
 case class NewAccount(email: String)

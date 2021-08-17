@@ -14,6 +14,7 @@ object Backend extends App {
   private lazy val accountService    = DeriveRoutes.gen[AccountProtocol]
   private lazy val userEventsService = DeriveRoutes.gen[UserEventsProtocol]
   private lazy val loginRoutes       = DeriveRoutes.gen[LoginProtocol]
+
   private lazy val app = loginRoutes +++ eventService +++
     Authentication.authenticate(HttpApp.forbidden("Not allowed!"), accountService +++ userEventsService)
 

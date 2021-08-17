@@ -3,15 +3,16 @@ description := "A full-stack Scala application powered by ZIO and Laminar."
 version := "0.1"
 
 val animusVersion    = "0.1.9"
-val laminarVersion   = "0.13.0"
-val laminextVersion  = "0.13.6"
-val postgresVersion  = "42.2.8"
-val sttpVersion      = "3.3.6"
+val laminarVersion   = "0.13.1"
+val laminextVersion  = "0.13.9"
+val postgresVersion  = "42.2.23"
+val sttpVersion      = "3.3.11"
 val zioAppVersion    = "0.2.5+9-2e55fbbd+20210618-1100-SNAPSHOT"
-val zioConfigVersion = "1.0.5"
+val zioConfigVersion = "1.0.6"
 val zioHttpVersion   = "1.0.0.0-RC17"
-val zioMagicVersion  = "0.3.3"
-val zioQuillVersion  = "3.7.0"
+val zioMagicVersion  = "0.3.6"
+val zioQueryVersion  = "0.2.9"
+val zioQuillVersion  = "3.8.0"
 val zioVersion       = "1.0.9"
 
 val sharedSettings = Seq(
@@ -47,6 +48,7 @@ lazy val backend = project
     libraryDependencies ++= Seq(
       "io.github.kitlangton"          %% "zio-magic"              % zioMagicVersion,
       "dev.zio"                       %% "zio-config"             % zioConfigVersion,
+      "dev.zio"                       %% "zio-query"              % zioQueryVersion,
       "dev.zio"                       %% "zio-config-yaml"        % zioConfigVersion,
       "dev.zio"                       %% "zio-config-magnolia"    % zioConfigVersion,
       "io.d11"                        %% "zhttp"                  % zioHttpVersion,
@@ -56,7 +58,7 @@ lazy val backend = project
       "com.github.jwt-scala"          %% "jwt-core"               % "8.0.2"
     )
   )
-  .dependsOn(shared)
+  .dependsOn(shared, macros)
 
 lazy val frontend = project
   .in(file("frontend"))
@@ -75,6 +77,18 @@ lazy val frontend = project
   )
   .settings(sharedSettings)
   .dependsOn(shared)
+
+lazy val macros = project
+  .enablePlugins(ScalaJSPlugin)
+  .in(file("macros"))
+  .settings(
+    sharedSettings,
+    libraryDependencies ++= Seq(
+      "org.scala-lang" % "scala-reflect" % scalaVersion.value
+    ),
+    scalaJSLinkerConfig ~= { _.withModuleKind(ModuleKind.ESModule) },
+    scalaJSLinkerConfig ~= { _.withSourceMap(false) }
+  )
 
 lazy val shared = project
   .enablePlugins(ScalaJSPlugin)
