@@ -1,6 +1,6 @@
-# zeetup
+# CONCLAVE
 
-A full-stack Scala application powered by ZIO and Laminar.
+A full-stack Scala meetup application powered by ZIO and Laminar.
 
 Created with **[zio-app](https://github.com/kitlangton/zio-app)**.
 
