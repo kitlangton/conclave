@@ -22,14 +22,13 @@ object Authentication {
   // Helper to encode the JWT token
   def jwtEncode(claims: Claims): String = {
     val json  = claims.toJson
-    val claim = JwtClaim { json }.issuedNow.expiresIn(99999999)
+    val claim = JwtClaim(json).issuedNow.expiresIn(99999999)
     Jwt.encode(claim, SECRET_KEY, JwtAlgorithm.HS512)
   }
 
   // Helper to decode the JWT token
-  def jwtDecode(token: String): Option[JwtClaim] = {
+  def jwtDecode(token: String): Option[JwtClaim] =
     Jwt.decode(token, SECRET_KEY, Seq(JwtAlgorithm.HS512)).toOption
-  }
 
   def authenticate[R, E](
       fail: HttpApp[R, E],

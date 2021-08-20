@@ -6,22 +6,20 @@ import zio.{query => _, _}
 import zymposium.QuillContext._
 import zymposium.model.{Event, Rsvp}
 
-import java.sql.{Connection, Timestamp, Types}
-import java.time.Instant
+import java.sql.Connection
 import java.util.UUID
 
 trait EventRepository {
-  def removeRsvp(rsvp: Rsvp): Task[Unit]
-
-  def rsvpStream: UStream[Rsvp]
-
+  def save(event: Event): Task[Event]
   def allEvents: Task[List[Event]]
   def allEventsStream: UStream[Event]
 
   def rsvps(accountId: UUID): Task[List[Rsvp]]
   def createRsvp(rsvp: Rsvp): Task[Unit]
+  def removeRsvp(rsvp: Rsvp): Task[Unit]
 
-  def save(event: Event): Task[Event]
+  def rsvpStream: UStream[Rsvp]
+
 }
 
 object EventRepository {
@@ -39,26 +37,22 @@ case class EventRepositoryLive(
 
   lazy val env: Has[Connection] = Has(connection)
 
-  implicit val instantEncoder: Encoder[Instant] =
-    encoder(Types.TIMESTAMP, (index, value, row) => row.setTimestamp(index, Timestamp.from(value)))
-
-  implicit val instantDecoder: Decoder[Instant] =
-    decoder((index, row) => { row.getTimestamp(index).toInstant })
+  // # EVENTS
 
   override def allEvents: Task[List[Event]] =
     run(query[Event]).provide(env)
 
   override def save(event: Event): Task[Event] =
-    for {
-      event <- run { query[Event].insert(lift(event)).returningGenerated(_.id) }
-        .provide(env)
-        .map { uuid => event.copy(id = uuid) }
-      _ <- newEventHub.publish(event)
-    } yield event
+    run(query[Event].insert(lift(event)).returningGenerated(_.id))
+      .provide(env)
+      .map(uuid => event.copy(id = uuid))
+      .tap(newEventHub.publish)
 
   override def allEventsStream: UStream[Event] =
     ZStream.fromEffect(allEvents.orDie.map(Chunk.fromIterable(_))).flattenChunks ++
       ZStream.fromHub(newEventHub)
+
+  // # RSVPS
 
   override def createRsvp(rsvp: Rsvp): Task[Unit] =
     run(query[Rsvp].insert(lift(rsvp))).provide(env) *>
@@ -67,9 +61,6 @@ case class EventRepositoryLive(
   override def rsvpStream: UStream[Rsvp] =
     ZStream.fromEffect(allRsvps.orDie.map(Chunk.fromIterable)).flattenChunks ++
       ZStream.fromHub(rsvpHub)
-
-  private def allRsvps: Task[List[Rsvp]] =
-    run(query[Rsvp]).provide(env)
 
   override def rsvps(accountId: UUID): Task[List[Rsvp]] =
     run(query[Rsvp].filter(_.accountId == lift(accountId))).provide(env)
@@ -80,6 +71,9 @@ case class EventRepositoryLive(
     }
       .provide(env)
       .unit
+
+  private def allRsvps: Task[List[Rsvp]] =
+    run(query[Rsvp]).provide(env)
 }
 
 object EventRepositoryLive {

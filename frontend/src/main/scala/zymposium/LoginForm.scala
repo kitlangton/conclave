@@ -43,7 +43,7 @@ case class LoginForm(accountVar: Var[Option[(AccountInfo, String)]]) extends Com
   private val subscribe =
     onMountCallback { (_: MountContext[HtmlElement]) =>
       Runtime.default.unsafeRunAsync_ {
-        eventService.allAccountsStream.tap { account => UIO(allAccountsVar.update(account :: _)) }.runDrain
+        eventService.allAccountsStream.tap(account => UIO(allAccountsVar.update(account :: _))).runDrain
       }
     }
 }

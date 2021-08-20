@@ -23,29 +23,28 @@ case class AdminPage() extends Component {
       RsvpForm(allAccountsVar, allEventsVar),
       Table.render(allRsvpsVar.signal)(identity),
       h4("Accounts"),
-      NewAccountForm(Observer { (newAccount) =>
+      NewAccountForm(Observer { newAccount =>
         runtime.unsafeRunAsync_(eventService.createAccount(newAccount))
       }),
       Table.render(allAccountsVar.signal)(_.id),
       div(height("32px")),
       h4("Events"),
-      NewEventForm(Observer { (newEvent) =>
+      NewEventForm(Observer { newEvent =>
         runtime.unsafeRunAsync_(eventService.createEvent(newEvent))
       }),
       Table.render(allEventsVar.signal)(_.id)
     )
 
-  private def subscriptions = {
+  private def subscriptions =
     onMountCallback { (_: MountContext[HtmlElement]) =>
       runtime.unsafeRunAsync_ {
-        eventService.allEventsStream.tap { event => UIO(allEventsVar.update(event :: _)) }.runDrain
+        eventService.allEventsStream.tap(event => UIO(allEventsVar.update(event :: _))).runDrain
       }
       runtime.unsafeRunAsync_ {
-        eventService.allAccountsStream.tap { account => UIO(allAccountsVar.update(account :: _)) }.runDrain
+        eventService.allAccountsStream.tap(account => UIO(allAccountsVar.update(account :: _))).runDrain
       }
       runtime.unsafeRunAsync_ {
-        eventService.allRsvpsStream.tap { rsvp => UIO(allRsvpsVar.update(rsvp :: _)) }.runDrain
+        eventService.allRsvpsStream.tap(rsvp => UIO(allRsvpsVar.update(rsvp :: _))).runDrain
       }
     }
-  }
 }

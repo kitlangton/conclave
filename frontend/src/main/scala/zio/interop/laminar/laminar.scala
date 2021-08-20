@@ -44,9 +44,7 @@ package object laminar {
           self
             .tapBoth(
               e => UIO(fail(e)),
-              { a =>
-                UIO(success(a))
-              }
+              a => UIO(success(a))
             )
         )
       )

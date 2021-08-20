@@ -29,15 +29,10 @@ object AccountRepository {
 case class AccountRepositoryLive(accountHub: Hub[Account], connection: Connection, blocking: Blocking.Service)
     extends AccountRepository {
 
-  implicit val instantEncoder: Encoder[Instant] =
-    encoder(Types.TIMESTAMP, (index, value, row) => row.setTimestamp(index, Timestamp.from(value)))
-
-  implicit val instantDecoder: Decoder[Instant] = decoder((index, row) => { row.getTimestamp(index).toInstant })
-
   lazy val env: Has[Connection] with Has[Blocking.Service] =
     Has(connection) ++ Has(blocking)
 
-  private val allAccountsQuery = quote { query[Account] }
+  private val allAccountsQuery = quote(query[Account])
 
   override def allAccounts: Task[List[Account]] =
     run(allAccountsQuery).provide(env)
@@ -48,18 +43,17 @@ case class AccountRepositoryLive(accountHub: Hub[Account], connection: Connectio
       _       <- accountHub.publish(account)
     } yield account
 
-  private def saveAccountToDatabase(account: Account) = {
-    run { query[Account].insert(lift(account)).returningGenerated(_.id) }
+  private def saveAccountToDatabase(account: Account) =
+    run(query[Account].insert(lift(account)).returningGenerated(_.id))
       .provide(env)
-      .map { uuid => account.copy(id = uuid) }
-  }
+      .map(uuid => account.copy(id = uuid))
 
   override def allAccountsStream: UStream[Account] =
     ZStream.fromEffect(allAccounts.orDie.map(Chunk.fromIterable)).flattenChunks ++
       ZStream.fromHub(accountHub)
 
   override def get(email: String): Task[Option[Account]] =
-    run { query[Account].filter(_.email == lift(email)) }
+    run(query[Account].filter(_.email == lift(email)))
       .provide(env)
       .map(_.headOption)
 }

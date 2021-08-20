@@ -20,7 +20,7 @@ case class UserEventsProtocolLive(appContext: AppContext, eventRepo: EventReposi
     for {
       ctx <- getAccountContext
       rsvp = Rsvp(accountId = ctx.accountId, eventId = event)
-      _ <- eventRepo.createRsvp(rsvp).orDie
+      _   <- eventRepo.createRsvp(rsvp).orDie
     } yield rsvp
 
   override def removeRsvp(event: UUID): UIO[Unit] =
@@ -29,9 +29,8 @@ case class UserEventsProtocolLive(appContext: AppContext, eventRepo: EventReposi
       _   <- eventRepo.removeRsvp(Rsvp(accountId = ctx.accountId, eventId = event)).orDie
     } yield ()
 
-  private def getAccountContext: UIO[Claims] = {
+  private def getAccountContext: UIO[Claims] =
     appContext.get.someOrFailException.orDie
-  }
 }
 
 object UserEventsProtocolLive {

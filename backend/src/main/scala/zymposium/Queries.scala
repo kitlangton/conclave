@@ -37,8 +37,8 @@ object Queries extends zio.App {
     DataSource.fromFunctionBatchedM("GetAccounts") { requests =>
       for {
         comments <- getCommentsZIO(requests.map(_.accountId))
-        map = comments.groupBy(_.accountId)
-      } yield requests.map { r => map.getOrElse(r.accountId, List.empty) }
+        map       = comments.groupBy(_.accountId)
+      } yield requests.map(r => map.getOrElse(r.accountId, List.empty))
     }
 
   val CommentsDataSource: DataSource[Has[Connection], CommentRequest[List[Comment]]] =
@@ -117,16 +117,16 @@ object Queries extends zio.App {
     for {
       accounts <- getAccountsZIO
       comments <- ZIO.foreachPar(accounts) { account =>
-        getCommentsZIO(account.id).map(account -> _)
-      }
+                    getCommentsZIO(account.id).map(account -> _)
+                  }
     } yield comments
 
   val programZQuery: ZQuery[Has[Connection], SQLException, List[(Account, List[Comment])]] =
     for {
       accounts <- getAccounts
       comments <- ZQuery.foreachPar(accounts) { account =>
-        getComments(account.id).map(account -> _)
-      }
+                    getComments(account.id).map(account -> _)
+                  }
     } yield comments
 
   val example =

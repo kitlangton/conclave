@@ -3,17 +3,18 @@ description := "A full-stack Scala application powered by ZIO and Laminar."
 version := "0.1"
 
 val animusVersion    = "0.1.9"
+val boopickleVersion = "1.4.0"
 val laminarVersion   = "0.13.1"
-val laminextVersion  = "0.13.9"
+val laminextVersion  = "0.13.10"
 val postgresVersion  = "42.2.23"
-val sttpVersion      = "3.3.11"
+val sttpVersion      = "3.3.13"
 val zioAppVersion    = "0.2.5+9-2e55fbbd+20210618-1100-SNAPSHOT"
 val zioConfigVersion = "1.0.6"
 val zioHttpVersion   = "1.0.0.0-RC17"
-val zioMagicVersion  = "0.3.6"
-val zioQueryVersion  = "0.2.9"
-val zioQuillVersion  = "3.8.0"
-val zioVersion       = "1.0.9"
+val zioMagicVersion  = "0.3.7"
+val zioQueryVersion  = "0.2.10"
+val zioQuillVersion  = "3.9.0"
+val zioVersion       = "1.0.10"
 
 val sharedSettings = Seq(
   addCompilerPlugin("org.typelevel" %% "kind-projector"     % "0.13.0" cross CrossVersion.full),
@@ -25,7 +26,7 @@ val sharedSettings = Seq(
   ),
   libraryDependencies ++= Seq(
     "io.github.kitlangton"           %% "zio-app"     % zioAppVersion,
-    "io.suzaku"                     %%% "boopickle"   % "1.3.2",
+    "io.suzaku"                     %%% "boopickle"   % boopickleVersion,
     "dev.zio"                       %%% "zio"         % zioVersion,
     "dev.zio"                       %%% "zio-streams" % zioVersion,
     "dev.zio"                       %%% "zio-macros"  % zioVersion,
@@ -55,7 +56,7 @@ lazy val backend = project
       "com.softwaremill.sttp.client3" %% "httpclient-backend-zio" % sttpVersion,
       "org.postgresql"                 % "postgresql"             % postgresVersion,
       "io.getquill"                   %% "quill-jdbc-zio"         % zioQuillVersion,
-      "com.github.jwt-scala"          %% "jwt-core"               % "8.0.2"
+      "com.github.jwt-scala"          %% "jwt-core"               % "9.0.0"
     )
   )
   .dependsOn(shared, macros)

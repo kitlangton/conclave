@@ -182,25 +182,19 @@ object Formula {
         "Name",
         "text",
         personVar.signal.map(_.name),
-        { string =>
-          personVar.update(_.copy(name = string))
-        }
+        string => personVar.update(_.copy(name = string))
       ),
       formInput(
         "Email",
         "text",
         personVar.signal.map(_.email),
-        { string =>
-          personVar.update(_.copy(email = string))
-        }
+        string => personVar.update(_.copy(email = string))
       ),
       formInput(
         "Age",
         "number",
         personVar.signal.map(_.age.toString),
-        { string =>
-          personVar.update(_.copy(age = string.toInt))
-        }
+        string => personVar.update(_.copy(age = string.toInt))
       )
     )
 

@@ -38,9 +38,9 @@ case class EventListing(token: String) extends Component {
             if (isAttending)
               (client.removeRsvp(event.id) *> UIO(rsvpVar.update(_.filterNot(_.eventId == event.id)))).runAsync()
             else
-              client.rsvp(event.id).tap { rsvp => UIO(rsvpVar.update(rsvp :: _)) }.runAsync()
+              client.rsvp(event.id).tap(rsvp => UIO(rsvpVar.update(rsvp :: _))).runAsync()
           },
-          child.text <-- $isAttending.map { if (_) "Attending" else "Rsvp" }
+          child.text <-- $isAttending.map(if (_) "Attending" else "Rsvp")
         )
       )
     }
