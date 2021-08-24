@@ -3,7 +3,7 @@ description := "A full-stack Scala application powered by ZIO and Laminar."
 version := "0.1"
 
 val animusVersion    = "0.1.9"
-val boopickleVersion = "1.4.0"
+val boopickleVersion = "1.3.2"
 val laminarVersion   = "0.13.1"
 val laminextVersion  = "0.13.10"
 val postgresVersion  = "42.2.23"

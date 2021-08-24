@@ -24,6 +24,8 @@ case class EventRepositoryTest(eventHub: Hub[Event], ref: Ref[Map[UUID, Event]])
   override def rsvpStream: UStream[Rsvp]                = zio.stream.Stream.empty
   override def rsvps(accountId: UUID): Task[List[Rsvp]] = Task(List.empty)
   override def removeRsvp(rsvp: Rsvp): Task[Unit]       = Task.unit
+
+  override def nextEvent(groupId: UUID): Task[Option[Event]] = Task.none
 }
 
 object EventRepositoryTest {

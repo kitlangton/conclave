@@ -6,7 +6,7 @@ import zio.{Has, Task, URLayer}
 import zymposium.model
 import zymposium.model._
 import zymposium.protocol._
-import zymposium.repositories.{AccountRepository, EventRepository}
+import zymposium.repositories.{AccountRepository, EventRepository, QueryMuckery}
 
 import java.time.Instant
 import java.util.UUID
@@ -20,7 +20,15 @@ case class EventProtocolLive(
     eventRepository.allEvents
 
   override def createEvent(newEvent: NewEvent): Task[Event] =
-    eventRepository.save(model.Event(UUID.randomUUID(), newEvent.title, newEvent.description, Instant.now()))
+    eventRepository.save(
+      model.Event(
+        UUID.randomUUID(),
+        newEvent.groupId,
+        newEvent.title,
+        newEvent.description,
+        Instant.now()
+      )
+    )
 
   override def allEventsStream: UStream[Event] = eventRepository.allEventsStream
 
@@ -35,6 +43,9 @@ case class EventProtocolLive(
 
   override def allRsvpsStream: UStream[Rsvp] =
     eventRepository.rsvpStream
+
+  override def nextEvent: Task[Option[Event]] =
+    eventRepository.nextEvent(QueryMuckery.gid)
 }
 
 object EventProtocolLive {

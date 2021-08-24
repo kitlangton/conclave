@@ -1,15 +1,20 @@
 package zymposium.repositories
 
 import zio.blocking.Blocking
+import zio.macros.accessible
 import zio.stream.{UStream, ZStream}
 import zio.{query => _, _}
+import zymposium.QuillContext
 import zymposium.QuillContext._
 import zymposium.model.{Event, Rsvp}
 
 import java.sql.Connection
 import java.util.UUID
 
+@accessible
 trait EventRepository {
+  def nextEvent(groupId: UUID): Task[Option[Event]]
+
   def save(event: Event): Task[Event]
   def allEvents: Task[List[Event]]
   def allEventsStream: UStream[Event]
@@ -74,6 +79,28 @@ case class EventRepositoryLive(
 
   private def allRsvps: Task[List[Rsvp]] =
     run(query[Rsvp]).provide(env)
+
+  override def nextEvent(groupId: UUID): Task[Option[Event]] =
+    run(
+      query[Event]
+        .filter(e => e.groupId == lift(groupId))
+        .sortBy(_.time)
+    )
+      .map(_.headOption)
+      .provide(env)
+}
+
+object QueryMuckery extends App {
+  val gid = UUID.fromString("c2aafb0a-7667-457f-a606-e6d73d2e91de")
+
+  import zio.magic._
+
+  override def run(args: List[String]): URIO[zio.ZEnv, ExitCode] =
+    EventRepository
+      .nextEvent(gid)
+      .debug("NEXT EVENT")
+      .inject(QuillContext.live, EventRepositoryLive.layer)
+      .exitCode
 }
 
 object EventRepositoryLive {
