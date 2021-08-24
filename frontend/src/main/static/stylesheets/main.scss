@@ -43,32 +43,31 @@ body {
 
 
 button {
-cursor: pointer;
-border: 1px solid #555;
-border-radius: 4px;
-color: rgba(255,255,255,0.9);
-font-size: 18px !important;
-outline: none;
-background: #223;
-width: 100%;
-font-weight: bold;
+  cursor: pointer;
+  border: 1px solid #555;
+  border-radius: 4px;
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 18px !important;
+  outline: none;
+  background: #223;
+  width: 100%;
+  font-weight: bold;
 
-&.cancel {
-background: #222;
-}
+  &.cancel {
+    background: #222;
+  }
 }
 
 textarea {
-background: #222;
-margin-bottom: 12px !important;
-border: 1px solid #333;
-border-radius: 4px;
-padding: 8px;
-outline: none;
-color: white;
-width: 100%;
-resize: none;
-font-size: 22px !important;
+  background: none;
+  border: none;
+  border-radius: 4px;
+  padding: 0px;
+  outline: none;
+  color: #D6D6D6;
+  width: 100%;
+  resize: none;
+  font-size: 18px;
 }
 
 form {
@@ -79,113 +78,114 @@ form {
 }
 
 .all-questions {
-    max-height: 300px;
-    overflow-y: scroll;
+  max-height: 300px;
+  overflow-y: scroll;
 }
 
 .vote-vote {
-    transition: width 0.5s;
+  transition: width 0.5s;
 }
 
 
 .slide {
-   transition: all 0.3s 0.0s;
-   position: relative;
+  transition: all 0.3s 0.0s;
+  position: relative;
 }
 
 
 .panel-visible {
-   transition: all 0.5s 0.0s;
-   opacity: 1;
-   position: relative;
-   transform: translateY(0px);
+  transition: all 0.5s 0.0s;
+  opacity: 1;
+  position: relative;
+  transform: translateY(0px);
 }
 
 .panel-hidden {
-   transition: all 0.3s 0.0s;
-   opacity: 0;
-   position: relative;
-   transform: translateY(50px);
+  transition: all 0.3s 0.0s;
+  opacity: 0;
+  position: relative;
+  transform: translateY(50px);
 }
 
 .slide-next, .slide-previous {
-    opacity: 0;
-    transform: rotateY(90deg);
+  opacity: 0;
+  transform: rotateY(90deg);
 }
 
 .slide-app {
-    transition: all 0.4s;
-    border-radius: 0px;
-    border: 1px solid #000;
-    margin: 0px;
+  transition: all 0.4s;
+  border-radius: 0px;
+  border: 1px solid #000;
+  margin: 0px;
 }
 
 .slide-app-shrink {
-    transition: all 0.8s;
-    border-radius: 8px;
-    border: 1px solid #555;
-    margin: 24px;
+  transition: all 0.8s;
+  border-radius: 8px;
+  border: 1px solid #555;
+  margin: 24px;
 }
 
 
 .hidden {
-    transition: all 0.4s;
-    opacity: 0;
+  transition: all 0.4s;
+  opacity: 0;
 }
 
 .visible {
-    opacity: 1;
-    transition: all 0.4s;
+  opacity: 1;
+  transition: all 0.4s;
 }
 
 .slide-current {
-    left: 0px;
-    z-index: 10;
-    transition: all 0.4s;
-    transform: rotateY(0deg);
+  left: 0px;
+  z-index: 10;
+  transition: all 0.4s;
+  transform: rotateY(0deg);
 }
 
 .slide-next {
-    left: -80px;
-//     transform: rotateZ(-4deg);
-    transform: rotateY(-90deg);
+  left: -80px;
+  //     transform: rotateZ(-4deg);
+  transform: rotateY(-90deg);
 }
 
 .slide-previous {
-    left: 80px;
+  left: 80px;
 }
 
 .input-group {
-    + .input-group {
-        margin-top: 24px;
-    }
+  + .input-group {
+    margin-top: 24px;
+  }
 
-    input {
-        font-size: 22px;
-        padding: 8px;
-    }
+  input {
+    font-size: 22px;
+    padding: 8px;
+  }
 }
 
 
 label {
-    text-transform: uppercase;
-    font-size: 14px;
-    opacity: 0.8;
-    display: block;
-    margin-bottom: 8px;
+  text-transform: uppercase;
+  font-size: 14px;
+  opacity: 0.8;
+  display: block;
+  margin-bottom: 8px;
 }
 
 input {
-    background: #222;
-    border: 1px solid #333;
-    border-radius: 4px;
-    margin-bottom: 16px;
-    color: white;
-
+  margin: 0;
+  padding: 0;
+  background: none;
+  border: none;
+  outline: none;
+  border-radius: 4px;
+  color: white;
 }
 
 ::placeholder {
-    color: rgba(255,255,255,0.25);
+  color: rgba(255, 255, 255, 0.25);
 }
 
 /**
@@ -327,8 +327,6 @@ optgroup,
 select,
 textarea {
   font-family: inherit; /* 1 */
-  font-size: 100%; /* 1 */
-  line-height: 1.15; /* 1 */
   margin: 0; /* 2 */
 }
 

@@ -1,3 +1,11 @@
+
+.primary-button {
+  transition: color 0.2s, border-color 0.2s;
+  &:hover {
+    background: rgba(#F95A00, 0.05);
+  }
+}
+
 .countdown {
   transition: color 0.3s;
 }

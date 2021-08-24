@@ -10,61 +10,6 @@ import zymposium.model.Event
 import zymposium.protocol.EventProtocol
 import zymposium.protocol.CustomPicklers._
 
-final case class JoinZoomButton() extends Component {
-  val $countdown: Signal[Int] = EventStream
-    .periodic(1000)
-    .foldLeft(60 * 40 + 3)((time, _) => time - 1)
-
-  val $showZoom = $countdown.map(_ <= 60 * 30)
-  val $isActive = $countdown.map(_ <= 60 * 10)
-  val $color    = $isActive.map(if (_) Colors.primary else Colors.subtle)
-
-  override def body: HtmlElement =
-    div(
-      display.flex,
-      flexDirection.column,
-      alignItems.center,
-      div(
-        fontSize("14px"),
-        child.text <-- $countdown.map { n =>
-          if (n <= 0) "LIVE NOW"
-          else {
-            var seconds = (n % 60).toString
-            if (seconds.length == 1) seconds = "0" + seconds
-            s"LIVE IN ${n / 60}:$seconds"
-          }
-        },
-        paddingBottom("4px")
-      ),
-      div(
-        display("flex"),
-        line,
-        alignItems.center,
-        div(
-          cursor.pointer,
-          padding("0 12px"),
-          div(
-            "JOIN ZOOM",
-            Transitions.height($showZoom),
-            Transitions.opacity($showZoom)
-          )
-        ),
-        line,
-        fontWeight.bold
-      ),
-      cls("countdown"),
-      color <-- $color
-    )
-
-  private def line: Div =
-    div(
-      width <-- $isActive.map(if (_) 32.0 else 0.0).spring.px,
-//      width("32px"),
-      height("1px"),
-      background(Colors.primary)
-    )
-}
-
 object Colors {
   val primary    = "#F95A00"
   val background = "#0F0E0E"
@@ -86,7 +31,11 @@ object Frontend {
       height("100%"),
       flexDirection("column"),
       title,
-      mainSection
+      div(
+        margin("0 auto"),
+        NewEventForm()
+      )
+//      mainSection
     )
 
   private def mainSection: Div =
@@ -140,8 +89,12 @@ object Frontend {
       historicEvent("Optics from Scratch", "July 25th")
     )
 
-  private def historicEvent(name: String, date: String): Div =
+  private def historicEvent(name: String, date: String): Div = {
+    val isHovering = Var(false)
     div(
+      onMouseOver.mapToStrict(true) --> isHovering,
+      onMouseOut.mapToStrict(false) --> isHovering,
+      color <-- isHovering.signal.map(if (_) Colors.primary else "white"),
       opacity(0.9),
       cursor.pointer,
       div(name, fontWeight.bold, fontStyle.italic, fontSize("18px")),
@@ -149,6 +102,7 @@ object Frontend {
       div(date, fontSize("14px"), color("#C8C8C8")),
       marginBottom("24px")
     )
+  }
 
   private def upNextView: Div =
     div(
@@ -201,10 +155,17 @@ object Frontend {
 
   private def title: Div =
     div(
-      position.absolute,
-      margin("8px"),
+      position("sticky"),
+      top("0px"),
+      padding("8px"),
       fontSize("18px"),
-      "CONCLAVE",
+      div(
+        display.flex,
+        width("100%"),
+        justifyContent.spaceBetween,
+        div("CONCLAVE", cursor.pointer),
+        div("KIT", cursor.pointer, fontWeight.normal, color(Colors.subtle))
+      ),
       fontWeight.bold,
       color(Colors.primary)
     )
