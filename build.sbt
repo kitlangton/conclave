@@ -58,6 +58,7 @@ lazy val backend = project
       "com.softwaremill.sttp.client3" %% "httpclient-backend-zio" % sttpVersion,
       "org.postgresql"                 % "postgresql"             % postgresVersion,
       "io.getquill"                   %% "quill-jdbc-zio"         % zioQuillVersion,
+      "com.github.t3hnar"             %% "scala-bcrypt"           % "4.3.0",
       "com.github.jwt-scala"          %% "jwt-core"               % "9.0.0"
     )
   )

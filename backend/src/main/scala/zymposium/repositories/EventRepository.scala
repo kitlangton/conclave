@@ -1,8 +1,6 @@
 package zymposium.repositories
 
-import zio.blocking.Blocking
 import zio.macros.accessible
-import zio.stream.{UStream, ZStream}
 import zio.{query => _, _}
 import zymposium.QuillContext
 import zymposium.QuillContext._
@@ -16,20 +14,19 @@ trait EventRepository {
   def nextEvent(groupId: GroupId): Task[Option[Event]]
 
   def save(event: Event): Task[Event]
+
   def allEvents: Task[List[Event]]
-  def allEventsStream: UStream[Event]
 
   def rsvps(accountId: AccountId): Task[List[Rsvp]]
+
   def createRsvp(rsvp: Rsvp): Task[Unit]
+
   def removeRsvp(rsvp: Rsvp): Task[Unit]
-
-  def rsvpStream: UStream[Rsvp]
-
 }
 
 object EventRepository {
-  val test: ULayer[Has[EventRepository]]                                              = EventRepositoryTest.layer
-  val live: URLayer[Has[Connection] with Has[Blocking.Service], Has[EventRepository]] = EventRepositoryLive.layer
+  val test: ULayer[Has[EventRepository]]                   = EventRepositoryTest.layer
+  val live: URLayer[Has[Connection], Has[EventRepository]] = EventRepositoryLive.layer
 
   def save(event: Event): ZIO[Has[EventRepository], Throwable, Event] = ZIO.serviceWith[EventRepository](_.save(event))
 }
@@ -53,19 +50,11 @@ case class EventRepositoryLive(
       .map(uuid => event.copy(id = uuid))
       .tap(newEventHub.publish)
 
-  override def allEventsStream: UStream[Event] =
-    ZStream.fromEffect(allEvents.orDie.map(Chunk.fromIterable(_))).flattenChunks ++
-      ZStream.fromHub(newEventHub)
-
   // # RSVPS
 
   override def createRsvp(rsvp: Rsvp): Task[Unit] =
     run(query[Rsvp].insert(lift(rsvp))).provide(env) *>
       rsvpHub.publish(rsvp).unit
-
-  override def rsvpStream: UStream[Rsvp] =
-    ZStream.fromEffect(allRsvps.orDie.map(Chunk.fromIterable)).flattenChunks ++
-      ZStream.fromHub(rsvpHub)
 
   override def rsvps(accountId: AccountId): Task[List[Rsvp]] =
     run(query[Rsvp].filter(_.accountId == lift(accountId))).provide(env)

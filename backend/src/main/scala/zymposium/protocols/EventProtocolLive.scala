@@ -1,7 +1,6 @@
 package zymposium.protocols
 
 import zio.random.Random
-import zio.stream.UStream
 import zio.{Has, Task, URLayer}
 import zymposium.model
 import zymposium.model._
@@ -30,19 +29,8 @@ case class EventProtocolLive(
       )
     )
 
-  override def allEventsStream: UStream[Event] = eventRepository.allEventsStream
-
-  override def createAccount(newAccount: NewAccount): Task[Account] =
-    accountRepository.save(Account(AccountId(UUID.randomUUID()), newAccount.email))
-
-  override def allAccountsStream: UStream[Account] =
-    accountRepository.allAccountsStream
-
   override def createRsvp(rsvp: Rsvp): Task[Unit] =
     eventRepository.createRsvp(rsvp)
-
-  override def allRsvpsStream: UStream[Rsvp] =
-    eventRepository.rsvpStream
 
   override def nextEvent: Task[Option[Event]] =
     eventRepository.nextEvent(QueryMuckery.gid)

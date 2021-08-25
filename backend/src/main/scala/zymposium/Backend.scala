@@ -2,12 +2,11 @@ package zymposium
 
 import zhttp.http._
 import zio._
+import zio.app.DeriveRoutes
 import zio.magic._
 import zymposium.protocol._
-import CustomPicklers._
-import zio.app.DeriveRoutes
 import zymposium.protocols.{AccountProtocolLive, EventProtocolLive, LoginProtocolLive, UserEventsProtocolLive}
-import zymposium.repositories.{AccountRepository, EventRepository}
+import zymposium.repositories.{AccountRepository, EventRepository, PasswordHasher}
 
 /** - Events
   *   √ Create events
@@ -51,6 +50,7 @@ object Backend extends App {
   override def run(args: List[String]): URIO[ZEnv, ExitCode] =
     program
       .injectCustom(
+        PasswordHasher.live,
         QuillContext.live,
         AccountRepository.live,
         EventRepository.live,
