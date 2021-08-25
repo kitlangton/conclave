@@ -7,6 +7,7 @@ import zio.magic._
 import zymposium.protocol._
 import zymposium.protocols.{AccountProtocolLive, EventProtocolLive, LoginProtocolLive, UserEventsProtocolLive}
 import zymposium.repositories.{AccountRepository, EventRepository, PasswordHasher}
+import CustomPicklers._
 
 /** - Events
   *   √ Create events

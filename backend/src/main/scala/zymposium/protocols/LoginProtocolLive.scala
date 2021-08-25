@@ -20,9 +20,15 @@ case class LoginProtocolLive(passwordHasher: PasswordHasher, accountRepository: 
              .when(account.passwordHash != passwordHasher.hashPassword(password))
     } yield JwtToken(jwtEncode(Claims(email, account.id)))
 
+  override def register(email: Email, password: Password): IO[String, JwtToken] =
+    accountRepository
+      .create(email, password)
+      .orDie
+      .map(account => JwtToken(jwtEncode(Claims(email, account.id))))
+
 }
 
 object LoginProtocolLive {
-  val layer: URLayer[Has[AccountRepository], Has[LoginProtocol]] =
+  val layer: URLayer[Has[PasswordHasher] with Has[AccountRepository], Has[LoginProtocol]] =
     (LoginProtocolLive.apply _).toLayer[LoginProtocol]
 }

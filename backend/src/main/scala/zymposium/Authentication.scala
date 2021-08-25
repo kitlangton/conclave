@@ -39,9 +39,7 @@ object Authentication {
         .flatMap {
           _.value match {
             case s"Bearer $token" =>
-              jwtDecode(token).flatMap { jwt =>
-                jwt.content.fromJson[Claims].toOption
-              }
+              decodeToken(token)
             case _ => None
           }
         }
@@ -52,4 +50,6 @@ object Authentication {
         }
     }.flatten
 
+  def decodeToken[E, R](token: String): Option[Claims] =
+    jwtDecode(token).flatMap(_.content.fromJson[Claims].toOption)
 }

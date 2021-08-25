@@ -10,5 +10,8 @@ final case class PasswordHasher(salt: String) {
 }
 
 object PasswordHasher {
-  val live = ZLayer.succeed(PasswordHasher("salt"))
+  val live = ZLayer.succeed(PasswordHasher("$2a$10$OCzRv.VFEKORkk2SG8r1au"))
+
+//  def main(args: Array[String]): Unit =
+//    println(bcrypt.generateSalt)
 }
