@@ -4,12 +4,12 @@ import pdi.jwt.{Jwt, JwtAlgorithm, JwtClaim}
 import zhttp.http.{Http, HttpApp, Request}
 import zio.Has
 import zio.json._
+import zymposium.model.{AccountId, Email}
 
 import java.time.Clock
-import java.util.UUID
 
 object Authentication {
-  case class Claims(email: String, accountId: UUID)
+  case class Claims(email: Email, accountId: AccountId)
 
   object Claims {
     implicit val codec: JsonCodec[Claims] = DeriveJsonCodec.gen[Claims]
@@ -39,9 +39,7 @@ object Authentication {
         .flatMap {
           _.value match {
             case s"Bearer $token" =>
-              println(s"BEARER ${token}")
               jwtDecode(token).flatMap { jwt =>
-                println(s"TOKEN ${jwt}")
                 jwt.content.fromJson[Claims].toOption
               }
             case _ => None

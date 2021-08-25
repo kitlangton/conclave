@@ -1,3 +1,3 @@
 package zymposium.model
 
-case class AccountInfo(email: String)
+case class AccountInfo(email: Email)

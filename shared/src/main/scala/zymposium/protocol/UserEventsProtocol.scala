@@ -1,13 +1,11 @@
 package zymposium.protocol
 
 import zio.UIO
-import zymposium.model.Rsvp
-
-import java.util.UUID
+import zymposium.model.{EventId, Rsvp}
 
 trait UserEventsProtocol {
   def rsvpedEvents: UIO[List[Rsvp]]
 
-  def rsvp(event: UUID): UIO[Rsvp]
-  def removeRsvp(event: UUID): UIO[Unit]
+  def rsvp(event: EventId): UIO[Rsvp]
+  def removeRsvp(event: EventId): UIO[Unit]
 }

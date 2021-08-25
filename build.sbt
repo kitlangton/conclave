@@ -2,19 +2,20 @@ name := "zeetup"
 description := "A full-stack Scala application powered by ZIO and Laminar."
 version := "0.1"
 
-val animusVersion    = "0.1.9"
-val boopickleVersion = "1.3.2"
-val laminarVersion   = "0.13.1"
-val laminextVersion  = "0.13.10"
-val postgresVersion  = "42.2.23"
-val sttpVersion      = "3.3.13"
-val zioAppVersion    = "0.2.5+9-2e55fbbd+20210618-1100-SNAPSHOT"
-val zioConfigVersion = "1.0.6"
-val zioHttpVersion   = "1.0.0.0-RC17"
-val zioMagicVersion  = "0.3.7"
-val zioQueryVersion  = "0.2.10"
-val zioQuillVersion  = "3.9.0"
-val zioVersion       = "1.0.10"
+val animusVersion     = "0.1.9"
+val boopickleVersion  = "1.3.2"
+val laminarVersion    = "0.13.1"
+val laminextVersion   = "0.13.10"
+val postgresVersion   = "42.2.23"
+val sttpVersion       = "3.3.13"
+val zioAppVersion     = "0.2.5+9-2e55fbbd+20210618-1100-SNAPSHOT"
+val zioConfigVersion  = "1.0.6"
+val zioHttpVersion    = "1.0.0.0-RC17"
+val zioMagicVersion   = "0.3.7"
+val zioQueryVersion   = "0.2.10"
+val zioQuillVersion   = "3.9.0"
+val zioVersion        = "1.0.10"
+val zioPreludeVersion = "1.0.0-RC5"
 
 val sharedSettings = Seq(
   addCompilerPlugin("org.typelevel" %% "kind-projector"     % "0.13.0" cross CrossVersion.full),
@@ -28,6 +29,7 @@ val sharedSettings = Seq(
     "io.github.kitlangton"           %% "zio-app"     % zioAppVersion,
     "io.suzaku"                     %%% "boopickle"   % boopickleVersion,
     "dev.zio"                       %%% "zio"         % zioVersion,
+    "dev.zio"                       %%% "zio-prelude" % zioPreludeVersion,
     "dev.zio"                       %%% "zio-streams" % zioVersion,
     "dev.zio"                       %%% "zio-macros"  % zioVersion,
     "dev.zio"                       %%% "zio-test"    % zioVersion % Test,

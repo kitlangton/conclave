@@ -3,7 +3,7 @@ package zymposium.protocols
 import zio._
 import zymposium.AppContext
 import zymposium.Authentication.Claims
-import zymposium.model.Rsvp
+import zymposium.model.{EventId, Rsvp}
 import zymposium.protocol.UserEventsProtocol
 import zymposium.repositories.EventRepository
 
@@ -16,14 +16,14 @@ case class UserEventsProtocolLive(appContext: AppContext, eventRepo: EventReposi
       rsvps <- eventRepo.rsvps(ctx.accountId).orDie
     } yield rsvps
 
-  override def rsvp(event: UUID): UIO[Rsvp] =
+  override def rsvp(event: EventId): UIO[Rsvp] =
     for {
       ctx <- getAccountContext
       rsvp = Rsvp(accountId = ctx.accountId, eventId = event)
       _   <- eventRepo.createRsvp(rsvp).orDie
     } yield rsvp
 
-  override def removeRsvp(event: UUID): UIO[Unit] =
+  override def removeRsvp(event: EventId): UIO[Unit] =
     for {
       ctx <- getAccountContext
       _   <- eventRepo.removeRsvp(Rsvp(accountId = ctx.accountId, eventId = event)).orDie

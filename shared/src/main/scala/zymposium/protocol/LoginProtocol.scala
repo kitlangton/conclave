@@ -1,8 +1,8 @@
 package zymposium.protocol
 
 import zio.IO
-import zymposium.model.JwtToken
+import zymposium.model.{Email, JwtToken, Password}
 
 trait LoginProtocol {
-  def login(username: String, password: String): IO[String, JwtToken]
+  def login(email: Email, password: Password): IO[String, JwtToken]
 }

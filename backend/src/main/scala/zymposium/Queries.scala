@@ -1,7 +1,7 @@
 package zymposium
 
 import zio.{Chunk, ExitCode, Has, UIO, URIO, ZIO}
-import zymposium.model.{Account, Comment}
+import zymposium.model.{Account, AccountId, Comment, CommentId}
 import zio.query._
 
 import java.sql.{Connection, SQLException}
@@ -21,10 +21,10 @@ object Queries extends zio.App {
     def apply[A](request: Request[_, A])(a: A): Any = a
   }
 
-  final case class GetCommentsByAccountId(accountId: UUID) extends CommentRequest[List[Comment]]
-  final case class GetCommentsById(id: UUID)               extends CommentRequest[List[Comment]]
+  final case class GetCommentsByAccountId(accountId: AccountId) extends CommentRequest[List[Comment]]
+  final case class GetCommentsById(id: CommentId)               extends CommentRequest[List[Comment]]
 
-  def getCommentById(id: UUID): ZQuery[Has[Connection], SQLException, Option[Comment]] =
+  def getCommentById(id: CommentId): ZQuery[Has[Connection], SQLException, Option[Comment]] =
     ZQuery.fromRequest(GetCommentsById(id))(CommentsDataSource).map(_.headOption)
 
   implicit val encodeUUID: MappedEncoding[UUID, String] = MappedEncoding[UUID, String](_.toString)
@@ -82,8 +82,8 @@ object Queries extends zio.App {
 //    }
 
   def getCommentsComplexZIO(
-      ids: Chunk[UUID],
-      accountIds: Chunk[UUID]
+      ids: Chunk[CommentId],
+      accountIds: Chunk[AccountId]
   ): ZIO[Has[Connection], SQLException, List[Comment]] =
     ZIO.debug(s"GETTING COMMENTS FOR accountIds $accountIds and ids $ids") *>
       QuillContext.run {
@@ -91,7 +91,7 @@ object Queries extends zio.App {
           .filter(c => liftQuery(accountIds).contains(c.accountId) || liftQuery(ids).contains(c.id))
       }
 
-  def getCommentsZIO(accountIds: Chunk[UUID]): ZIO[Has[Connection], SQLException, List[Comment]] =
+  def getCommentsZIO(accountIds: Chunk[AccountId]): ZIO[Has[Connection], SQLException, List[Comment]] =
 //    val list = accountIds.toList
     // SELECT c.id, c.account_id, c.text FROM comment c WHERE c.account_id = ANY(?)
     ZIO.debug(s"GETTING COMMENTS FOR $accountIds") *>
@@ -99,7 +99,7 @@ object Queries extends zio.App {
         query[Comment].filter(c => liftQuery(accountIds).contains(c.accountId))
       }
 
-  def getCommentsZIO(accountId: UUID): ZIO[Has[Connection], SQLException, List[Comment]] =
+  def getCommentsZIO(accountId: AccountId): ZIO[Has[Connection], SQLException, List[Comment]] =
     ZIO.debug(s"GETTING COMMENTS FOR $accountId") *>
       QuillContext.run(query[Comment].filter(_.accountId == lift(accountId)))
 
@@ -107,7 +107,7 @@ object Queries extends zio.App {
     ZIO.debug(s"GETTING ACCOUNTS") *>
       QuillContext.run(query[Account])
 
-  def getComments(accountId: UUID): ZQuery[Has[Connection], SQLException, List[Comment]] =
+  def getComments(accountId: AccountId): ZQuery[Has[Connection], SQLException, List[Comment]] =
     ZQuery.fromRequest(GetCommentsByAccountId(accountId))(CommentsDataSource)
 
   def getAccounts: ZQuery[Has[Connection], SQLException, List[Account]] =
@@ -130,7 +130,7 @@ object Queries extends zio.App {
     } yield comments
 
   val example =
-    getCommentsZIO(UUID.fromString("de23733b-a2af-4dbd-8500-1be9637fdbd3"))
+    getCommentsZIO(AccountId(UUID.fromString("de23733b-a2af-4dbd-8500-1be9637fdbd3")))
 
   override def run(args: List[String]): URIO[zio.ZEnv, ExitCode] =
     programZQuery.run

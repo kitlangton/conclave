@@ -33,9 +33,9 @@ object Frontend {
       title,
       div(
         margin("0 auto"),
-        NewEventForm()
+//        NewEventForm()
+        mainSection
       )
-//      mainSection
     )
 
   private def mainSection: Div =

@@ -1,16 +1,15 @@
 package zymposium.model
 
 import java.time.Instant
-import java.util.UUID
 
 final case class Group(
-    id: UUID,
+    id: GroupId,
     name: String
 )
 
 final case class Event(
-    id: UUID,
-    groupId: UUID,
+    id: EventId,
+    groupId: GroupId,
     title: String,
     description: String,
     time: Instant
@@ -20,6 +19,6 @@ final case class Event(
 
 final case class NewEvent(
     title: String,
-    groupId: UUID,
+    groupId: GroupId,
     description: String
 )

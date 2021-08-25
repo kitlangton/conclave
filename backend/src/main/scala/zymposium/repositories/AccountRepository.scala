@@ -4,13 +4,12 @@ import zio.blocking.Blocking
 import zio.stream.{UStream, ZStream}
 import zio.{query => _, _}
 import zymposium.QuillContext._
-import zymposium.model.Account
+import zymposium.model.{Account, Email}
 
-import java.sql.{Connection, Timestamp, Types}
-import java.time.Instant
+import java.sql.Connection
 
 trait AccountRepository {
-  def get(email: String): Task[Option[Account]]
+  def get(email: Email): Task[Option[Account]]
 
   def allAccountsStream: UStream[Account]
 
@@ -52,7 +51,7 @@ case class AccountRepositoryLive(accountHub: Hub[Account], connection: Connectio
     ZStream.fromEffect(allAccounts.orDie.map(Chunk.fromIterable)).flattenChunks ++
       ZStream.fromHub(accountHub)
 
-  override def get(email: String): Task[Option[Account]] =
+  override def get(email: Email): Task[Option[Account]] =
     run(query[Account].filter(_.email == lift(email)))
       .provide(env)
       .map(_.headOption)

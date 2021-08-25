@@ -22,7 +22,7 @@ case class EventProtocolLive(
   override def createEvent(newEvent: NewEvent): Task[Event] =
     eventRepository.save(
       model.Event(
-        UUID.randomUUID(),
+        EventId(UUID.randomUUID()),
         newEvent.groupId,
         newEvent.title,
         newEvent.description,
@@ -33,7 +33,7 @@ case class EventProtocolLive(
   override def allEventsStream: UStream[Event] = eventRepository.allEventsStream
 
   override def createAccount(newAccount: NewAccount): Task[Account] =
-    accountRepository.save(Account(UUID.randomUUID(), newAccount.email))
+    accountRepository.save(Account(AccountId(UUID.randomUUID()), newAccount.email))
 
   override def allAccountsStream: UStream[Account] =
     accountRepository.allAccountsStream

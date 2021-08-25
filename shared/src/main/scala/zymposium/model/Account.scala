@@ -1,18 +1,37 @@
 package zymposium.model
 
+import zio.json.{DeriveJsonCodec, JsonCodec}
+
 import java.util.UUID
 
+final case class CommentId(uuid: UUID) extends AnyVal
+final case class AccountId(uuid: UUID) extends AnyVal
+final case class EventId(uuid: UUID)   extends AnyVal
+final case class GroupId(uuid: UUID)   extends AnyVal
+
+object AccountId {
+  implicit val codec: JsonCodec[AccountId] = DeriveJsonCodec.gen
+}
+
+final case class Email(string: String) extends AnyVal
+
+object Email {
+  implicit val codec: JsonCodec[Email] = DeriveJsonCodec.gen
+}
+
+final case class Password(string: String) extends AnyVal
+
 case class Account(
-    id: UUID,
-    email: String,
+    id: AccountId,
+    email: Email,
     githubAccessToken: Option[String] = None,
     githubRefreshToken: Option[String] = None
 )
 
 case class Comment(
-    id: UUID,
+    id: CommentId,
     text: String,
-    accountId: UUID
+    accountId: AccountId
 )
 
-case class NewAccount(email: String)
+case class NewAccount(email: Email)
