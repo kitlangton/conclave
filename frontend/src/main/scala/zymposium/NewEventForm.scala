@@ -5,12 +5,13 @@ import components.Component
 import animus._
 
 final case class NewEventForm() extends Component {
-  val nameVar        = Var("Zymposium")
+  //  val nameVar        = Var("Zymposium")
+  val nameVar        = Var("")
   val descriptionVar = Var("")
 
   val $isValid: Signal[Boolean] =
     nameVar.signal.combineWithFn(descriptionVar.signal) { (name, desc) =>
-      name.nonEmpty && desc.nonEmpty
+      name.nonEmpty && desc.length >= 10
     }
 
   override def body: HtmlElement =
@@ -36,6 +37,7 @@ final case class NewEventForm() extends Component {
           value <-- nameVar,
           onInput.mapToValue --> nameVar
         ),
+        autoFocus(true),
         placeholder("GROUP NAME"),
         textTransform.uppercase,
         fontSize("32px"),
@@ -55,9 +57,14 @@ final case class NewEventForm() extends Component {
       createButton
     )
 
+  val isPressingCommand  = Var(false)
+  val $isPressingCommand = isPressingCommand.signal
+
   private def createButton: Div = {
     val $color = $isValid.map(if (_) Colors.primary else Colors.subtle)
     div(
+      windowEvents.onKeyDown.map(_.metaKey) --> isPressingCommand,
+      windowEvents.onKeyUp.map(_.metaKey) --> isPressingCommand,
       display.flex,
       position.relative,
       alignItems.center,
@@ -69,13 +76,17 @@ final case class NewEventForm() extends Component {
         padding("4px"),
         color(Colors.background),
         position.absolute,
-        "ENTER",
+        display.flex,
+        div("⌘", paddingRight("4px")),
+        div("ENTER"),
         fontSize("12px"),
         opacity <-- $isValid.map(if (_) 0.8 else 0.0).spring
       ),
       cursor <-- $isValid.map(if (_) "pointer" else "auto"),
       disabled <-- $isValid.map(!_),
-      cls.toggle("primary-button") <-- $isValid,
+      cls("primary-button"),
+      cls.toggle("is-valid") <-- $isValid,
+      cls.toggle("is-hovered") <-- $isPressingCommand.combineWithFn($isValid)(_ && _),
       fontSize("14px"),
       color <-- $color,
       padding("8px"),

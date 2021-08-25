@@ -33,8 +33,8 @@ object Frontend {
       title,
       div(
         margin("0 auto"),
-//        NewEventForm()
-        mainSection
+        NewEventForm()
+//        mainSection
       )
     )
 

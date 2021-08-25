@@ -1,8 +1,17 @@
 
 .primary-button {
-  transition: color 0.2s, border-color 0.2s;
+  transition: background-color 0.1s, color 0.2s, border-color 0.2s;
   &:hover {
-    background: rgba(#F95A00, 0.05);
+    background: rgba(#FFF, 0.05);
+  }
+  &.is-valid {
+    &:hover {
+      background: rgba(#F95A00, 0.05);
+    }
+  }
+
+  &.is-hovered {
+    background: rgba(#F95A00, 0.1);
   }
 }
 
