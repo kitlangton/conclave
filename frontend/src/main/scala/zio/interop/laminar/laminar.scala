@@ -2,7 +2,6 @@ package zio.interop
 
 import com.raquo.laminar.api.L._
 import zio._
-import zio.internal.{Executor, Platform}
 import zio.stream.ZStream
 
 import scala.concurrent.ExecutionContext
@@ -10,7 +9,7 @@ import scala.scalajs.js
 
 package object laminar {
 
-  def runtimeFromLayerJS[R <: Has[_]](layer: ULayer[R]): Runtime.Managed[R] = {
+  def runtimeFromLayerJS[R](layer: ULayer[R]): Runtime.Managed[R] = {
     val scalaJSExecutor =
       Executor.fromExecutionContext(Int.MaxValue) {
         new ExecutionContext {
@@ -22,8 +21,8 @@ package object laminar {
       }
 
     Runtime
-      .unsafeFromLayer(layer, Platform.fromExecutor(scalaJSExecutor))
-      .withExecutor(Runtime.default.platform.executor)
+      .unsafeFromLayer(layer, RuntimeConfig.fromExecutor(scalaJSExecutor))
+      .withExecutor(Runtime.default.runtimeConfig.executor)
   }
 
   implicit final class ZioEventStreamOps[A](val self: EventStream[A]) extends AnyVal {
@@ -33,14 +32,14 @@ package object laminar {
 
   implicit final class ZioOps[E, A](val self: ZIO[ZEnv, E, A]) extends AnyVal {
     def runAsync(): Unit =
-      Runtime.default.unsafeRunAsync_(self)
+      Runtime.default.unsafeRunAsync(self)
 
     def toSignal(initial: => A): Signal[A] =
       toEventStream.toSignal(initial)
 
     def toEventStream: EventStream[A] = {
       val promise = new js.Promise[A]((success, fail) =>
-        Runtime.default.unsafeRunAsync_(
+        Runtime.default.unsafeRunAsync(
           self
             .tapBoth(
               e => UIO(fail(e)),
@@ -59,7 +58,7 @@ package object laminar {
     def toEventStream: EventStream[A] =
       EventStream.fromCustomSource[A](
         start = { (next, error, index, isStarted) =>
-          Runtime.default.unsafeRunAsync_(
+          Runtime.default.unsafeRunAsync(
             self.tap { value =>
               UIO(next(value))
             }.runDrain
