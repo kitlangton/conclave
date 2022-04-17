@@ -14,7 +14,7 @@ final case class Group(
 final case class Event(
     id: EventId,
     groupId: GroupId,
-    title: String,
+    name: String,
     description: String,
     time: Instant
     // Zoom Link

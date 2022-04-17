@@ -4,7 +4,7 @@ import zio._
 import conclave.model._
 
 case class EventRepositoryTest(eventHub: Hub[Event], ref: Ref[Map[EventId, Event]]) extends EventRepository {
-  override def allEvents: Task[List[Event]] =
+  override def allEvents(groupId: GroupId): Task[List[Event]] =
     ref.get.map(_.values.toList)
 
   override def save(event: Event): Task[Event] =

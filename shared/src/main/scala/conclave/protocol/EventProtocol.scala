@@ -8,7 +8,7 @@ import conclave.model._
 trait EventProtocol {
   def nextEvent: Task[Option[Event]]
 
-  def allEvents: Task[List[Event]]
+  def allEvents(groupId: GroupId): Task[List[Event]]
 
   def createEvent(newEvent: NewEvent): Task[Event]
 

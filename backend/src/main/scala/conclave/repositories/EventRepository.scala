@@ -5,6 +5,7 @@ import zio.{query => _, _}
 import conclave.QuillContext
 import conclave.QuillContext._
 import conclave.model.{AccountId, Event, GroupId, Rsvp}
+import io.getquill.Ord
 
 import java.util.UUID
 import javax.sql.DataSource
@@ -15,7 +16,7 @@ trait EventRepository {
 
   def save(event: Event): Task[Event]
 
-  def allEvents: Task[List[Event]]
+  def allEvents(groupId: GroupId): Task[List[Event]]
 
   def rsvps(accountId: AccountId): Task[List[Rsvp]]
 
@@ -39,8 +40,13 @@ case class EventRepositoryLive(
 
   // # EVENTS
 
-  override def allEvents: Task[List[Event]] =
-    run(query[Event]).provideService(dataSource)
+  override def allEvents(groupId: GroupId): Task[List[Event]] = {
+    println(s"GROUP ID: $groupId")
+    run(
+      query[Event].filter(_.groupId == lift(groupId)).sortBy(_.time)(Ord.desc)
+    ).provideService(dataSource)
+      .debug("OH")
+  }
 
   override def save(event: Event): Task[Event] =
     run(query[Event].insertValue(lift(event)).returningGenerated(_.id))
@@ -75,16 +81,6 @@ case class EventRepositoryLive(
     )
       .map(_.headOption)
       .provideService(dataSource)
-}
-
-object QueryMuckery extends ZIOAppDefault {
-  val gid = GroupId(UUID.fromString("c2aafb0a-7667-457f-a606-e6d73d2e91de"))
-
-  val run =
-    EventRepository
-      .nextEvent(gid)
-      .debug("NEXT EVENT")
-      .provide(QuillContext.live, EventRepositoryLive.layer)
 }
 
 object EventRepositoryLive {
